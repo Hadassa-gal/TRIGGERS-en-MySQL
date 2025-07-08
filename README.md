@@ -166,5 +166,17 @@ CREATE TABLE pedidos (
     cliente VARCHAR(100),
     estado ENUM('pendiente', 'completado')
 );
+DELIMITER //
+CREATE TRIGGER no_eliminacion_pendientes
+BEFORE DELETE ON pedidos
+FOR EACH ROW
+BEGIN
+	IF OLD.estado = 'pendiente' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se puede eliminar un pedido pendiente';
+    END IF;
+END //
+DELIMITER ;
 ```
 
+![](https://media.discordapp.net/attachments/1337463162940817490/1392207961236963428/image.png?ex=686eb233&is=686d60b3&hm=b0fbf24ccfada02e8669cfe609df3fece9c312acddc193ac51e8759b9b0a3f97&=&format=webp&quality=lossless)
