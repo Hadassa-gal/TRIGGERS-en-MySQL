@@ -77,26 +77,27 @@ La empresa **TechCorp** desea mantener un registro histórico de todos los cambi
 
 ```sql
 DELIMITER //
-
 CREATE TRIGGER before_empleados_update
 BEFORE UPDATE ON empleados
 FOR EACH ROW
 BEGIN
-	DECLARE salario_old DECIMAL(10,2);
-	DECLARE salario_old DECIMAL(10,2);
-	DECLARE empleado_id INT;
-    IF NEW.cantidad > stock_actual THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'LA cantidad ingresada a comprar supera el stock';
-    END IF;
+	INSERT INTO historial_salarios (id_empleado, salario_anterior, salario_nuevo)
+    VALUES (OLD.id, OLD.salario, NEW.salario);
 END //
 DELIMITER ;
 
-INSERT INTO productos (nombre, stock) VALUES ('Teclado', 10);
+INSERT INTO empleados (nombre, salario) VALUES ('Ana López', 2500.00);
+INSERT INTO empleados (nombre, salario) VALUES ('Carlos Pérez', 3000.00);
+INSERT INTO empleados (nombre, salario) VALUES ('Lucía Torres', 2800.00);
 
-INSERT INTO productos (nombre, stock) VALUES ('Monitor', 5);
-
+UPDATE empleados SET salario = 2700.00 WHERE id = 1;
+UPDATE empleados SET salario = 3200.00 WHERE id = 2;
+UPDATE empleados SET salario = 2850.00 WHERE id = 3;
 ```
+
+![](https://media.discordapp.net/attachments/1337463162940817490/1392199834517114961/image.png?ex=686eaaa2&is=686d5922&hm=eea89e6b55845943f1896a863ba416afcd8984327ece03069c531c2514ba3b48&=&format=webp&quality=lossless)
+
+![](https://media.discordapp.net/attachments/1337463162940817490/1392199980911165470/image.png?ex=686eaac5&is=686d5945&hm=af131925e997cb6254f28660ba4bf2e1f0b0754fbeaa88f1b462316f5d81b500&=&format=webp&quality=lossless)
 
 ## **🔹 Caso 3: Registro de Eliminaciones en Auditoría**
 
