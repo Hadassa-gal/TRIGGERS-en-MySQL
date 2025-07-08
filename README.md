@@ -112,20 +112,41 @@ La empresa **DataSecure** quiere registrar toda eliminación de clientes en una 
 3. Probar el trigger.
 
 ```sql
-CREATE TABLE clientes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50),
-    email VARCHAR(50)
-);
+DELIMITER //
+CREATE TRIGGER historial_clientes
+AFTER DELETE ON clientes
+FOR EACH ROW
+BEGIN
+	INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+    VALUES (OLD.id, OLD.nombre, OLD.email);
+END //
+DELIMITER ;
 
-CREATE TABLE clientes_auditoria (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    id_cliente INT,
-    nombre VARCHAR(50),
-    email VARCHAR(50),
-    fecha_eliminacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+VALUES (1, 'Juan Pérez', 'juan.perez@example.com');
+
+INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+VALUES (2, 'María Gómez', 'maria.gomez@example.com');
+
+INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+VALUES (3, 'Luis Martínez', 'luis.martinez@example.com');
+
+INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+VALUES (4, 'Ana Fernández', 'ana.fernandez@example.com');
+
+INSERT INTO clientes_auditoria (id_cliente, nombre, email)
+VALUES (5, 'Carlos Ruiz', 'carlos.ruiz@example.com');
+
+DELETE FROM clientes WHERE id = 1;
+DELETE FROM clientes WHERE id = 2;
+DELETE FROM clientes WHERE id = 3;
+DELETE FROM clientes WHERE id = 4;
+DELETE FROM clientes WHERE id = 5;
 ```
+
+![](https://media.discordapp.net/attachments/1337463162940817490/1392204499493584917/image.png?ex=686eaefa&is=686d5d7a&hm=86a58ad1b7762ad6dd0ed1bb5a3e2e783663cab8da2456a30bce0e460fa90ebc&=&format=webp&quality=lossless&width=698&height=860)
+
+![](https://media.discordapp.net/attachments/1337463162940817490/1392204836379955240/image.png?ex=686eaf4a&is=686d5dca&hm=51a4e6fcb848ed7ffd5f21411a2a838168f21c53f410b836e04f3104ceddf840&=&format=webp&quality=lossless)
 
 ## **🔹 Caso 4: Restricción de Eliminación de Pedidos Pendientes**
 
